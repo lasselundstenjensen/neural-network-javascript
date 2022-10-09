@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<script language="JavaScript" src="InputNeuron.js"></script>
+		<script language="JavaScript" src="HiddenNeuron.js"></script>
+		<script language="JavaScript" src="OutputNeuron.js"></script>
+		<script language="JavaScript" src="Link.js"></script>
+		<script language="JavaScript" src="NeuralNetwork.js"></script>
+	</head>
+	
+	<body>
+		<h1>Neural network feed-forward test</h1>
+		<canvas id="NeuralNetworkCanvas"></canvas>
+		<div id="NeuralNetworkLog">
+			<script>
+				// Construct neural network.
+				var neuralnetwork = new NeuralNetwork();
+				neuralnetwork.create(4, 2, 3);
+				var inputValues = new Array(1, 1, 1, 1);
+				
+				// First pass.
+				neuralnetwork.setInputValues(inputValues);
+				var outputs = neuralnetwork.getOutputValues();
+				for (i = 0; i < outputs.length; i++) {
+					document.getElementById('NeuralNetworkLog').innerHTML += "output value is: " + outputs[i] + " <br />";
+				}
+				
+				// Train 5 times.
+				for (var i = 0; i < 5; i++) {
+					neuralnetwork.train( [1, 1, 1, 1], [1, 0, 1] );
+				}
+				
+				// Train 5 times.
+				for (var i = 0; i < 5; i++) {
+					neuralnetwork.train( [0, 0, 0, 0], [0, 1, 0] );
+				}
+				
+				// Second pass. 1st dataset.
+				neuralnetwork.setInputValues(inputValues);
+				var outputs = neuralnetwork.getOutputValues();
+				for (i = 0; i < outputs.length; i++) {
+					document.getElementById('NeuralNetworkLog').innerHTML += "output value is: " + outputs[i] + " <br />";
+				}
+				
+				// Third pass. 2nd dataset.
+				neuralnetwork.setInputValues( [0, 0, 0, 0] );
+				var outputs = neuralnetwork.getOutputValues();
+				for (i = 0; i < outputs.length; i++) {
+					document.getElementById('NeuralNetworkLog').innerHTML += "output value is: " + outputs[i] + " <br />";
+				}				
+
+				
+				// Draw neural network.
+				var canvas = document.getElementById('NeuralNetworkCanvas');
+				var context = canvas.getContext('2d');
+				
+				var neuronSpace = 30;
+				var neuronRadius = 10;
+				var layerInputX = 30;
+				var layerHiddenX = 130;
+				var layerOutputX = 230;
+				
+				// Input neurons.
+				var centersInputs = []; 
+				for (var i = 0; i < neuralnetwork.inputNeurons.length; i++) {
+					var center = (i+1)*neuronSpace;
+					centersInputs[i] = center;
+					
+					context.beginPath();
+					context.arc(layerInputX, center, neuronRadius, 0, 2 * Math.PI);
+					context.stroke();
+					context.closePath();
+				}
+				// Hidden neurons.
+				var centersHiddens = [];
+				for (var i = 0; i < neuralnetwork.hiddenNeurons.length; i++) {
+					var center = (i+2)*neuronSpace;
+					centersHiddens[i] = center;
+					
+					context.beginPath();
+					context.arc(layerHiddenX, center, neuronRadius, 0, 2 * Math.PI);
+					context.stroke();
+					context.closePath();
+				}
+				// Output neurons.
+				var centersOutputs = [];
+				for (var i = 0; i < neuralnetwork.outputNeurons.length; i++) {
+					var center = (i+1.5)*neuronSpace;
+					centersOutputs[i] = center;
+					
+					context.beginPath();
+					context.arc(layerOutputX, center, neuronRadius, 0, 2 * Math.PI);
+					context.stroke();
+					context.closePath();
+				}
+				
+				// Links between input neurons and hidden neurons.
+				for (var i = 0; i < centersInputs.length; i++) {
+					for (var j = 0; j < centersHiddens.length; j++) {
+						context.moveTo(layerInputX, centersInputs[i]);
+						context.lineTo(layerHiddenX, centersHiddens[j]);
+						context.stroke();
+					}
+				}
+				// Links between hidden neurons and output neurons.
+				for (var i = 0; i < centersHiddens.length; i++) {
+					for (var j = 0; j < centersOutputs.length; j++) {
+						context.moveTo(layerHiddenX, centersHiddens[i]);
+						context.lineTo(layerOutputX, centersOutputs[j]);
+						context.stroke();
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>
